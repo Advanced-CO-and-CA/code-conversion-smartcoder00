@@ -145,7 +145,7 @@ _main:                                              @
     bl   _fnStoreResultb                            @    Result Store Index
     add  result_store_idx, #1                       @
 
-/*** Part 2 Test B: Convert to BCD to HEX *******************************************************/
+/*** Part 3: Convert to BCD to HEX *************************************************************/
                                                     @ Convert BCD to Hex
     ldr  param1, =result_start                      @ Initialize local Variables
     ldr  result_store_idx, =result_part3            @    value and result
