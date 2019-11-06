@@ -56,13 +56,14 @@ temp2                .req r9                        @ Temporary Variable
 
 .global _main
     bl _main
-    
+
 .global _fncheckforHexDigit
 
 /*** main Function ******************************************************************************/
 result_store_idx     .req r10                       @ Index for result Store
 value_idx            .req r11                       @ Index for Values
 _main:                                              @
+/*** Part 1: Convert to Hex *********************************************************************/
                                                     @ Convert to Hex
     mov  result_store_idx, #0                       @ Intialize local variables
     mov  value_idx, #0                              @
@@ -78,6 +79,8 @@ _main:                                              @
     add  value_idx, #1                              @
     b    _part1_loop                                @
   _part1_end:                                       @
+
+/*** Part 2_prework: Convert to Binary ***********************************************************/
                                                     @ Convert to Binary
     ldr  param2, =part2_input1                      @ Intialize local variables
     mov  value_idx, #0                              @
@@ -92,6 +95,8 @@ _main:                                              @
     add  value_idx, #1                              @
     b    _part2_1_loop                              @
   _part2_1_end:                                     @
+
+/*** Part 2_prework: Convert to Binary ***********************************************************/
                                                     @ Convert to Binary
     ldr  param2, =part2_input2                      @ Intialize local variables
     mov  value_idx, #0                              @
@@ -106,11 +111,13 @@ _main:                                              @
     add  value_idx, #1                              @
     b    _part2_2_loop                              @
   _part2_2end:                                      @
+
+/*** Part 2 Test A: Convert to Binary ***********************************************************/
                                                     @ Convert Binary String to Hex
     ldr  param1, =result_start                      @ Initialize local Variables
     ldr  result_store_idx, =result_part2            @    pointer to string and result
-    sub  result_store_idx, param1                   @ 
-    ldr  param1, =part2_input1                      @ 
+    sub  result_store_idx, param1                   @
+    ldr  param1, =part2_input1                      @
     bl   _fnStringtoBin                             @ Convert Binary to Hex
     mov   param1, result_store_idx                  @ Store the Result and increment
     bl   _fnStoreResultb                            @    Result Store Index
@@ -119,6 +126,8 @@ _main:                                              @
     mov   param1, result_store_idx                  @ Store the Result and increment
     bl   _fnStoreResultb                            @    Result Store Index
     add  result_store_idx, #1                       @
+
+/*** Part 2 Test B: Convert to Binary ***********************************************************/
                                                     @ Convert Binary String to Hex
     ldr  param1, =part2_input2                      @ Initialize local Variables
     bl   _fnStringtoBin                             @ Convert Binary String to Hex
@@ -129,10 +138,12 @@ _main:                                              @
     mov   param1, result_store_idx                  @ Store the Result and increment
     bl   _fnStoreResultb                            @    Result Store Index
     add  result_store_idx, #1                       @
+
+/*** Part 2 Test B: Convert to BCD to HEX *******************************************************/
                                                     @ Convert BCD to Hex
     ldr  param1, =result_start                      @ Initialize local Variables
-    ldr  result_store_idx, =result_part3            @    value and result 
-    sub  result_store_idx, param1                   @ 
+    ldr  result_store_idx, =result_part3            @    value and result
+    sub  result_store_idx, param1                   @
     ldr  param1, =part3_input                       @
     ldr  param1, [param1]                           @
     bl   _fnBCDtoHEX                                @ Convert BCD to Hex
@@ -156,7 +167,7 @@ _fnAsciitoHex   :                                   @ Find SubString Index
     movs  retVal, #0xFF                             @
   _fnAsciitoHex_end:                                @
     pop   {param1, pc}                              @ Restore all values and return
-    
+
 /*** Function: StringtoBin ***********************************************************************
 * Convert a given eight ASCII characters in the variable STRING to an 8-bit binary number in the*
 * variable NUMBER. Clear the byte variable ERROR if all the ASICC characters are either ASCII   *
@@ -189,8 +200,8 @@ _fnStringtoBin   :                                  @ Find SubString Index
     movs  retVal, temp2                             @
     pop   {str_Idx, temp1, temp2}                   @ Store local variables
     pop   {param1, pc}                              @ Restore all values and return
-    
-    
+
+
 /*** Function: BCDtoHEX *************************************************************************
 * Convert a given eight-digit packed binary-coded-decimal number in the BCDNUM variable into a  *
 * 32-bit number in a NUMBER variable.                                                           *
@@ -198,21 +209,21 @@ _fnStringtoBin   :                                  @ Find SubString Index
 _fnBCDtoHEX:                                        @ Find SubString Index
     push  {param1, lr}                              @ Store local variables & return address to stack
     push  {param2, temp1, temp2}                    @ Store local variables
-    mov   retVal, #0                                @ 
-    mov   temp2, #1                                 @ 
-    mov   param2, #10                               @ 
-  _fnBCDtoHEX_continue:                             @ 
-    movs  temp1, param1                             @ 
-    beq   _fnBCDtoHEX_end                           @   
+    mov   retVal, #0                                @
+    mov   temp2, #1                                 @
+    mov   param2, #10                               @
+  _fnBCDtoHEX_continue:                             @
+    movs  temp1, param1                             @
+    beq   _fnBCDtoHEX_end                           @
     and   temp1, #0x0F                              @
     mla   retVal, temp1, temp2, retVal              @
     mul   temp2, temp2, param2                      @
     movs  param1, param1, LSR #4                    @
     b     _fnBCDtoHEX_continue                      @
-  _fnBCDtoHEX_end:                                  @ 
+  _fnBCDtoHEX_end:                                  @
     pop   {param2, temp1, temp2}                    @ Store local variables
     pop   {param1, pc}                              @ Restore all values and return
-    
+
 /*** Function: AsciitoBin ***********************************************************************
 * Convert a given ASCII characters in the variable to an 8-bit binary number in the variable    *
 * NUMBER. set ERROR to all ones (0xFF).                                                         *
@@ -249,7 +260,7 @@ _fncheckforHexDigit:                                @ Check the digit is hex or 
     subs  retVal, #1
   _fncheckforHexDigit_retValue:
     pop  {temp, pc}
-    
+
 /*** Function: checkforBinDigit *****************************************************************/
 _fncheckforBinDigit:                                @ Check the digit is bin or not and convert
     push  {temp, lr}
@@ -271,7 +282,7 @@ _fnStoreResult:                                     @ Store Result, Recevies Ind
     ldr   temp, =result_start
     str   retVal, [temp, param1]
     pop   {temp, pc}
-    
+
 /*** Function: storeResultByte********************************************************************/
 _fnStoreResultb:                                    @ Store Result, Recevies Index and retVal
     push  {temp, lr}
