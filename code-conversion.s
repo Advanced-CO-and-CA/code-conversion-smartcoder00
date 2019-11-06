@@ -57,7 +57,13 @@ temp2                .req r9                        @ Temporary Variable
 .global _main
     bl _main
 
-.global _fncheckforHexDigit
+/*** Function Declarations **********************************************************************/
+.global _fnAsciitoHex                               @ Convert Ascii to Hex
+.global _fnAsciitoBin                               @ Convert Ascii to Binary
+.global _fnStringtoBin                              @ Convert Ascii String to Hex(Binary)
+.global _fnBCDtoHEX                                 @ Convert BCD to Hex
+.global _fnStoreResult                              @ Store word data to result
+.global _fnStoreResultb                             @ Store byte data to result
 
 /*** main Function ******************************************************************************/
 result_store_idx     .req r10                       @ Index for result Store
