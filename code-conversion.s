@@ -20,16 +20,11 @@
     part2_input2:         .asciz    "11010710"
     .ALIGN 4
     part3_input:          .word     0x92529679
-                                                    @ Part1 Test Result
+                                                    
     .ALIGN 4
-    result_start:         .asciz    "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
-                          .asciz    "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
-                                                    @ Part2 Test Result
-    .ALIGN 4
-    result_part2:         .byte     0x00, 0x00, 0x00, 0x00
-                                                    @ Part3 Test Result
-    .ALIGN 4
-    result_part3:         .word     0x00
+    result_part1:         .skip     0x80            @ Part1 Test Result
+    result_part2:         .skip     0x04            @ Part2 Test Result
+    result_part3:         .word     0x00            @ Part3 Test Result
 @ text section
       .text
 
@@ -56,6 +51,8 @@ temp2                .req r9                        @ Temporary Variable
 
 .global _main
     bl _main
+  _end_of_main:
+    bl   _end_of_program                            @ End of the program is here
 
 /*** Function Declarations **********************************************************************/
 .global _fnAsciitoHex                               @ Convert Ascii to Hex
@@ -120,7 +117,7 @@ _main:                                              @
 
 /*** Part 2 Test A: Convert to Binary ***********************************************************/
                                                     @ Convert Binary String to Hex
-    ldr  param1, =result_start                      @ Initialize local Variables
+    ldr  param1, =result_part1                      @ Initialize local Variables
     ldr  result_store_idx, =result_part2            @    pointer to string and result
     sub  result_store_idx, param1                   @
     ldr  param1, =part2_input1                      @
@@ -147,7 +144,7 @@ _main:                                              @
 
 /*** Part 3: Convert to BCD to HEX *************************************************************/
                                                     @ Convert BCD to Hex
-    ldr  param1, =result_start                      @ Initialize local Variables
+    ldr  param1, =result_part1                      @ Initialize local Variables
     ldr  result_store_idx, =result_part3            @    value and result
     sub  result_store_idx, param1                   @
     ldr  param1, =part3_input                       @
@@ -157,7 +154,7 @@ _main:                                              @
     bl   _fnStoreResult                             @    Result Store Index
     add  result_store_idx, #1                       @
                                                     @
-    bl   _end_of_program                            @ End of the program is here
+    bl   _end_of_main                               @ End of the main is here
 
 /*** Function: AsciitoHex ***********************************************************************
 * Convert the contents of a given A_DIGIT variable from an ASCII character to a hexadecimal     *
@@ -285,14 +282,14 @@ _fncheckforBinDigit:                                @ Check the digit is bin or 
 /*** Function: storeResult **********************************************************************/
 _fnStoreResult:                                     @ Store Result, Recevies Index and retVal
     push  {temp, lr}
-    ldr   temp, =result_start
+    ldr   temp, =result_part1
     str   retVal, [temp, param1]
     pop   {temp, pc}
 
 /*** Function: storeResultByte********************************************************************/
 _fnStoreResultb:                                    @ Store Result, Recevies Index and retVal
     push  {temp, lr}
-    ldr   temp, =result_start
+    ldr   temp, =result_part1
     strb  retVal, [temp, param1]
     pop   {temp, pc}
 
